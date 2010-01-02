@@ -195,8 +195,9 @@ module Kagura
       logger = Kagura::Logger.get_logger(File.basename(__FILE__, ".*"))
       logger.fatal("fatal error(message) : #{evar.message}")
       logger.fatal("fatal error(backtrace) : #{evar.backtrace.join("\n")}")
-      response << ("%s: %s (%s)\n" % [evar.backtrace[0], evar.message, evar.send('class')]) + evar.backtrace[1..-1].join("<br>")
-      puts "content-type: text/html\n\n<plaintext>\n" + response
+      puts "content-type: text/html\n\n<plaintext>\n" +
+        ("%s: %s (%s)\n" % [evar.backtrace[0], evar.message, evar.send('class')]) +
+        evar.backtrace[1..-1].join("<br>")
     end
   end
 end
