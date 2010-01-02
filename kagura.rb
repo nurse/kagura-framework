@@ -54,20 +54,10 @@ module Kagura
       base_path = File.join([pwd, LOGIC_DIR, script_name])
       logger.debug("script logic directory : #{base_path}")
       if File.directory?(base_path)
-        flist = Dir.entries(base_path)
-        flist.reject! {|v| v =~ /\A(\.|\.\.)\Z/ }
-        logger.debug("script logic directory's filelist : #{flist.join(', ')}")
-        flist.each {|f|
-          fpath = File.join([base_path, f])
-          rb_list.push(fpath) if File.extname(fpath) == ".rb"
-        }
-        rb_list.each {|v|
-          if File.exist?(v)
-            Kernel.require(v)
-          else
-            debug.error("kernel.require(logic) : file not found #{v}")
-            raise RuntimeError("NotFound: #{v}").new
-          end
+        Dir.foreach(base_path) { |fn|
+          next unless File.extname(fn) == '.rb'
+          logger.debug("logic file '#{fn}' is loaded")
+          require File.join(base_path, fn)
         }
       end
       

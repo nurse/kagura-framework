@@ -9,7 +9,7 @@ module Sample
     end
     
     def run(request)
-      @time = Time.now
+      @time = Sample::Logic.get_time
     end
     
     def response(request)
@@ -24,7 +24,7 @@ module Sample
     end
     
     def run(request)
-      @day = Time.now.day
+      @day = Sample::Logic.get_day
     end
     
     def response(request)
