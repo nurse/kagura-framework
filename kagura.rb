@@ -50,7 +50,6 @@ module Kagura
       end
       
       # dynamic load (logic class)
-      rb_list = Array.new
       base_path = File.join([pwd, LOGIC_DIR, script_name])
       logger.debug("script logic directory : #{base_path}")
       if File.directory?(base_path)
