@@ -34,7 +34,7 @@ module Kagura
       end
       
       logger.debug("working directory : #{BASE_DIR}")
-      base_path = File.join(BASE_DIR, CONTROLLER_DIR, script_name)
+      base_path = File.join(BASE_DIR, CONTROLLER_DIR)
       logger.debug("script controller directory : #{base_path}")
       Dir.foreach(base_path) do |fn|
         next unless File.extname(fn) == '.rb'
@@ -51,7 +51,7 @@ module Kagura
       
       # dynamic load (logic class)
       rb_list = Array.new
-      base_path = File.join(BASE_DIR, LOGIC_DIR, script_name)
+      base_path = File.join(BASE_DIR, LOGIC_DIR)
       logger.debug("script logic directory : #{base_path}")
       if File.directory?(base_path)
         flist = Dir.entries(base_path)
