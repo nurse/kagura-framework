@@ -141,73 +141,73 @@ module Kagura
       logger
     end
   end
-end
-
-def main
-  # initialize session & cgi params
-  cgi = CGI.new
-  session = CGI::Session.new(cgi)
-  params = Hash[*cgi.params.to_a.map{|k, v| [k, v[0].to_s]}.flatten]
-  request = Kagura::Request.new(cgi, session, params)
-  logger = Kagura::Logger.get_logger(File.basename(cgi.script_name, ".*"))
   
-  begin
-    # get controller class name
-    controller_name = params["mode"] ? params["mode"] : "default"
-    # get instance
-    action = Kagura::Controller.get_controller(File.basename(cgi.script_name, ".*"), controller_name)
-  rescue NameError => evar
-    response = String.new
-    logger.debug("name error(message) : #{evar.message}")
-    logger.debug("name error(backtrace) : #{evar.backtrace.join("\n")}")
-    if File.exist?(NAMEERROR_ERB_PATH)
-      erb = ERB.new(File.open(NAMEERROR_ERB_PATH, "r:utf-8") {|f| f.read}, nil, "-")
-      response = erb.result(binding)
-    else
+  def self.main
+    # initialize session & cgi params
+    cgi = CGI.new
+    session = CGI::Session.new(cgi)
+    params = Hash[*cgi.params.to_a.map{|k, v| [k, v[0].to_s]}.flatten]
+    request = Kagura::Request.new(cgi, session, params)
+    logger = Kagura::Logger.get_logger(File.basename(cgi.script_name, ".*"))
+    
+    begin
+      # get controller class name
+      controller_name = params["mode"] ? params["mode"] : "default"
+      # get instance
+      action = Kagura::Controller.get_controller(File.basename(cgi.script_name, ".*"), controller_name)
+    rescue NameError => evar
+      response = String.new
+      logger.debug("name error(message) : #{evar.message}")
+      logger.debug("name error(backtrace) : #{evar.backtrace.join("\n")}")
+      if File.exist?(NAMEERROR_ERB_PATH)
+        erb = ERB.new(File.open(NAMEERROR_ERB_PATH, "r:utf-8") {|f| f.read}, nil, "-")
+        response = erb.result(binding)
+      else
+        response << '<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><style>body { font-size: 12px; } div{ padding: 5px; }</style><title>Kagura Framework [EMERGENCY ERROR]</title></head><body>'
+        response << '<table align="center"><tr><td style="width: 800px;">EMERGENCY ERROR OCCUR!<br><br>'
+        response << 'STACKTRACE : <div style="color: #ff0000; border: 1px solid #ff6666">'
+        response << ("%s: %s (%s)\n" % [evar.backtrace[0], evar.message, evar.send('class')]) + evar.backtrace[1..-1].join("<br>")
+        response << '</td></tr></table></div></body></html>'
+      end
+      # output
+      cgi.out { response }
+      return
+    end
+    
+    # action area
+    begin
+      # check require method
+      if action.respond_to?('run') and action.respond_to?('request')
+        raise NoMethodError
+      end
+      # request method execute
+      action.run(request)
+      # get response
+      response = action.response(request)
+    rescue => evar
+      logger.error("emerge error(message) : #{evar.message}")
+      logger.error("emerge error(backtrace) : #{evar.backtrace.join("\n")}")
+      response = String.new
       response << '<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><style>body { font-size: 12px; } div{ padding: 5px; }</style><title>Kagura Framework [EMERGENCY ERROR]</title></head><body>'
       response << '<table align="center"><tr><td style="width: 800px;">EMERGENCY ERROR OCCUR!<br><br>'
       response << 'STACKTRACE : <div style="color: #ff0000; border: 1px solid #ff6666">'
       response << ("%s: %s (%s)\n" % [evar.backtrace[0], evar.message, evar.send('class')]) + evar.backtrace[1..-1].join("<br>")
       response << '</td></tr></table></div></body></html>'
     end
+    
     # output
     cgi.out { response }
-    return
   end
   
-  # action area
-  begin
-    # check require method
-    if action.respond_to?('run') and action.respond_to?('request')
-      raise NoMethodError
+  def self.run
+    begin
+      Kagura.main
+    rescue => evar
+      logger = Kagura::Logger.get_logger(File.basename(__FILE__, ".*"))
+      logger.fatal("fatal error(message) : #{evar.message}")
+      logger.fatal("fatal error(backtrace) : #{evar.backtrace.join("\n")}")
+      response << ("%s: %s (%s)\n" % [evar.backtrace[0], evar.message, evar.send('class')]) + evar.backtrace[1..-1].join("<br>")
+      puts "content-type: text/html\n\n<plaintext>\n" + response
     end
-    # request method execute
-    action.run(request)
-    # get response
-    response = action.response(request)
-  rescue => evar
-    logger.error("emerge error(message) : #{evar.message}")
-    logger.error("emerge error(backtrace) : #{evar.backtrace.join("\n")}")
-    response = String.new
-    response << '<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><style>body { font-size: 12px; } div{ padding: 5px; }</style><title>Kagura Framework [EMERGENCY ERROR]</title></head><body>'
-    response << '<table align="center"><tr><td style="width: 800px;">EMERGENCY ERROR OCCUR!<br><br>'
-    response << 'STACKTRACE : <div style="color: #ff0000; border: 1px solid #ff6666">'
-    response << ("%s: %s (%s)\n" % [evar.backtrace[0], evar.message, evar.send('class')]) + evar.backtrace[1..-1].join("<br>")
-    response << '</td></tr></table></div></body></html>'
-  end
-  
-  # output
-  cgi.out { response }
-end
-
-def run
-  begin
-    main
-  rescue => evar
-    logger = Kagura::Logger.get_logger(File.basename(__FILE__, ".*"))
-    logger.fatal("fatal error(message) : #{evar.message}")
-    logger.fatal("fatal error(backtrace) : #{evar.backtrace.join("\n")}")
-    response << ("%s: %s (%s)\n" % [evar.backtrace[0], evar.message, evar.send('class')]) + evar.backtrace[1..-1].join("<br>")
-    puts "content-type: text/html\n\n<plaintext>\n" + response
   end
 end

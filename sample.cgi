@@ -7,4 +7,4 @@ pnakotic_lib = File.join([pwd, "kagura.rb"])
 Kernel.require(pnakotic_lib)
 
 # execute
-run
+Kagura.run
