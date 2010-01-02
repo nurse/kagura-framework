@@ -17,6 +17,7 @@ LOGGER_LEVEL = Object::Logger::DEBUG
 
 #= Kagura Engine Namespace
 module Kagura
+  BASE_DIR = File.expand_path(File.dirname(__FILE__))
   
   #= Controller class
   class Controller
@@ -32,9 +33,8 @@ module Kagura
         raise NameError
       end
       
-      pwd = File.expand_path(File.dirname(__FILE__))
-      logger.debug("working directory : #{pwd}")
-      base_path = File.join([pwd, CONTROLLER_DIR, script_name])
+      logger.debug("working directory : #{BASE_DIR}")
+      base_path = File.join(BASE_DIR, CONTROLLER_DIR, script_name)
       logger.debug("script controller directory : #{base_path}")
       Dir.foreach(base_path) do |fn|
         next unless File.extname(fn) == '.rb'
@@ -43,7 +43,7 @@ module Kagura
       end
       
       # static load (common logic class)
-      common_logic_path = File.join([pwd, LOGIC_DIR, "common.rb"])
+      common_logic_path = File.join(BASE_DIR, LOGIC_DIR, "common.rb")
       logger.debug("common logic filepath : #{common_logic_path}")
       if File.exist?(common_logic_path)
         Kernel.require(common_logic_path)
@@ -51,7 +51,7 @@ module Kagura
       
       # dynamic load (logic class)
       rb_list = Array.new
-      base_path = File.join([pwd, LOGIC_DIR, script_name])
+      base_path = File.join(BASE_DIR, LOGIC_DIR, script_name)
       logger.debug("script logic directory : #{base_path}")
       if File.directory?(base_path)
         flist = Dir.entries(base_path)
@@ -105,10 +105,10 @@ module Kagura
       # create pstore
       if arg[0] == true
         begin
-          @temp = PStore.new(File.join([File.expand_path(File.dirname(__FILE__)), "work", @session.session_id + ".dat"]))
+          @temp = PStore.new(File.join(BASE_DIR, "work", @session.session_id + ".dat"))
         rescue
-          File.delete(File.join([File.expand_path(File.dirname(__FILE__)), "work", @session.session_id + ".dat"]))
-          @temp = PStore.new(File.join([File.expand_path(File.dirname(__FILE__)), "work", @session.session_id + ".dat"]))
+          File.delete(File.join(BASE_DIR, "work", @session.session_id + ".dat"))
+          @temp = PStore.new(File.join(BASE_DIR, "work", @session.session_id + ".dat"))
         end
       end
     end
