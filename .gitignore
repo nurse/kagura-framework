@@ -1,0 +1,7 @@
+data.csv
+*.doc
+*.tmp_*
+*.loadpath
+*.project
+*.dat
+*.log

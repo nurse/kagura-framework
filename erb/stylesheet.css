@@ -1,0 +1,98 @@
+body {
+    font-size: 9pt;
+    line-height: 13pt;
+    font-family: sans-serif;
+    color: #1E4080;
+    background-color: white;
+    background-position: right bottom;
+    text-align: center;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+table {
+    border-width: 0px 0px 0px 0px;
+}
+
+td {
+    font-size: 9pt;
+    line-height: 13pt;
+}
+
+th {
+    font-size: 9pt;
+    line-height: 13pt;
+}
+
+a:link {
+    text-decoration: none;
+    color: #A5A5BE;
+}
+
+a:visited {
+    text-decoration: none;
+    color: #A5A5BE;
+}
+
+a:active {
+    text-decoration: none;
+    color: #A5A5BE;
+}
+
+a:hover {
+    text-decoration: underline;
+    color: #A5A5BE;
+}
+
+
+a:link {
+    text-decoration: none;
+    color: #A5A5BE;
+}
+
+a:visited {
+    text-decoration: none;
+    color: #A5A5BE;
+}
+
+a:active {
+    text-decoration: none;
+    color: #A5A5BE;
+}
+
+a:hover {
+    text-decoration: underline;
+    color: #A5A5BE;
+}
+
+input {
+    font-size: 9pt;
+    line-height: 13pt;
+    font-family: sans-serif;
+    color: #1E4080;
+    border: 1px dashed #BABAFE;
+    background-color: #F5F5FF;
+}
+
+textarea {
+    font-size: 9pt;
+    line-height: 13pt;
+    font-family: sans-serif;
+    color: #1E4080;
+    border: 1px dashed #BABAFE;
+    background-color: #F5F5FF;
+}
+
+.b_solid {
+    border: 1px solid #6666aa;
+}
+
+.b_dotted {
+    border: 1px dotted #6666aa;
+}
+
+.graphbar {
+    border: #8888cc solid 1px;
+    background-color: #ccccff;
+	padding: 0px;
+}
