@@ -34,24 +34,13 @@ module Kagura
       
       pwd = File.expand_path(File.dirname(__FILE__))
       logger.debug("working directory : #{pwd}")
-      rb_list = []
       base_path = File.join([pwd, CONTROLLER_DIR, script_name])
       logger.debug("script controller directory : #{base_path}")
-      flist = Dir.entries(base_path)
-      flist.reject! {|v| v =~ /\A(\.|\.\.)\Z/ }
-      logger.debug("script controller directory's filelist : #{flist.join(', ')}")
-      flist.each {|f|
-        fpath = File.join([base_path, f])
-        rb_list.push(fpath) if File.extname(fpath) == ".rb"
-      }
-      rb_list.each {|v|
-        if File.exist?(v)
-          Kernel.require(v)
-        else
-          debug.error("kernel.require(controller) : file not found #{v}")
-          raise RuntimeError("NotFound: #{v}")
-        end
-      }
+      Dir.foreach(base_path) do |fn|
+        next unless File.extname(fn) == '.rb'
+        logger.debug("controller file '#{fn}' is loaded")
+        require File.join(base_path, fn)
+      end
       
       # static load (common logic class)
       common_logic_path = File.join([pwd, LOGIC_DIR, "common.rb"])
