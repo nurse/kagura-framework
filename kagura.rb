@@ -61,25 +61,10 @@ module Kagura
       end
       
       # return (target) instance
-      class_name = upcase_1st_char(controller_name)
-      module_name = upcase_1st_char(script_name)
-      module_name << '::'
-      class_name = module_name + class_name
-      logger.info("create instance name : #{class_name}")
-      target_class = class_name.split(/::/).inject(Object) { |c,name| c.const_get(name) }
-      target_class.new
-    end
-    
-    #= Upcase in 1st char method.
-    #
-    # Example(1) : sample -> Sample
-    #        (2) : z -> Z
-    def self.upcase_1st_char(str)
-      if str.length == 1
-        str[0..0].to_s.upcase
-      else
-        str[0..0].to_s.upcase + str[1..str.length]
-      end
+      class_name = controller_name.camelize
+      module_name = script_name.camelize
+      logger.info("create instance : #{module_name}::#{class_name}.new")
+      Object.const_get(module_name).const_get(class_name).new
     end
   end
   
@@ -188,5 +173,16 @@ module Kagura
        ("%s: %s (%s)\n" % [evar.backtrace[0], evar.message, evar.send('class')]) +
       evar.backtrace[1..-1].join("<br>")
     end
+  end
+end
+
+class String
+  #= UpperCamelCase given string.
+  #
+  # Example(1) : sample -> Sample
+  #        (2) : z -> Z
+  #        (2) : camel_case -> CamelCase
+  def self.camelize(str)
+    gsub(/(?:\A|_)(\w)/){$1.upcase}
   end
 end
